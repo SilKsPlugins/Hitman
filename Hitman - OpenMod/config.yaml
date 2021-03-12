@@ -5,9 +5,9 @@ database:
 hits:
   duration: 1 day # Time until hit expires
   checkInterval: 30 seconds # Time between checks for expired hits
-  canPlaceOnSelf: false
-  minimumBounty: 100
-  refundExpired: false
+  canPlaceOnSelf: false # Whether or not players can place hits on themselves
+  minimumBounty: 100 # Minimum bounty for a hit
+  refundExpired: false # Should refund expired, unclaimed bounties
 
   placed:
     announce: true # Should announce in the chat when a hit is placed
@@ -23,5 +23,5 @@ hits:
 
 ui:
   autoDisplay: true # Show to users by default
-  maxHitsShown: 10
+  maxHitsShown: 10 # No greater value than ten
   effectId: 29200
