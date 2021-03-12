@@ -1,0 +1,27 @@
+database:
+  ConnectionStrings:
+    default: "Server=127.0.0.1; Database=openmod; Port=3306; User=unturned; Password=password"
+
+hits:
+  duration: 1 day # Time until hit expires
+  checkInterval: 30 seconds # Time between checks for expired hits
+  canPlaceOnSelf: false
+  minimumBounty: 100
+  refundExpired: false
+
+  placed:
+    announce: true # Should announce in the chat when a hit is placed
+    tellTarget: true # Should tell the target when a hit is placed on them
+
+  completed:
+    announce: true # Should announce in the chat when a hit is completed
+    tellTarget: true # Should tell the target when a hit placed on them is completed
+
+  expired:
+    tellTarget: true # Should tell the target a hit on them has expired
+    tellHirer: true # Should tell the hirer a hit they placed has expired
+
+ui:
+  autoDisplay: true # Show to users by default
+  maxHitsShown: 10
+  effectId: 29200

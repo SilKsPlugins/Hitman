@@ -1,0 +1,31 @@
+commands:
+  success:
+    hit_placed:
+      hirer: "You have placed a hit on {Target.DisplayName} for {CurrencySymbol}{Bounty:0.00}."
+      target: "{Hirer.DisplayName} has placed a hit on you for {CurrencySymbol}{Bounty:0.00}."
+      announce: "{Hirer.DisplayName} has placed a hit on {Target.DisplayName} for {CurrencySymbol}{Bounty:0.00}."
+  errors:
+    invalid_bounty: "The bounty must be greater than {MinimumBounty}."
+    cannot_self_place: "You cannot place a bounty on yourself."
+    target_hit_exempt: "{Target.DisplayName} cannot have hits placed on them."
+
+announcements:
+  hit_completed:
+    target: "{Killer.DisplayName} has claimed the bounty of {CurrencySymbol}{Bounty:0.00} on your head."
+    announce: "{Killer.DisplayName} has claimed the bounty of {CurrencySymbol}{Bounty:0.00} on {Target.DisplayName}'s head."
+    killer: "You have successfully claimed the bounty of {CurrencySymbol}{Bounty:0.00} on {Target.DisplayName}'s head."
+  
+  hit_expired:
+    target: "A hit placed on your head for {CurrencySymbol}{Bounty:0.00} has expired."
+    hirer: "A hit you placed for {CurrencySymbol}{Bounty:0.00} has expired."
+  
+
+transactions:
+  hit_placed: "Bounty placed on {Target.DisplayName}"
+  hit_completed: "Claimed bounty for {Target.DisplayName}"
+  hit_expired: "Bounty refund as hit on {Target.DisplayName} expired"
+
+ui:
+  header: "Current Hits:"
+  playerName: "{User.DisplayName}"
+  bounty: "{CurrencySymbol}{Bounty:0.00}"
