@@ -24,4 +24,4 @@ hits:
 ui:
   autoDisplay: true # Show to users by default
   maxHitsShown: 10 # No greater value than ten
-  effectId: 29200
+  effectId: 29200 # 29200 - Right Side, 29201 - Left Side
