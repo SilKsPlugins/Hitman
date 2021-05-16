@@ -71,20 +71,7 @@ namespace Hitman.Hits
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                var expireTime = DateTime.Now.Subtract(duration);
-
-                var expiredHits = await _hitManager.GetHitsData().Where(x => x.TimePlaced < expireTime)
-                    .ToListAsync(_cancellationToken.Token);
-
-                await _hitManager.RemoveHits(expiredHits);
-
-                foreach (var @event in expiredHits.Select(hit => new HitExpiredEvent(hit)))
-                {
-                    _logger.LogInformation(
-                        $"Expiring hit on player {@event.Hit.TargetPlayerId} placed by {@event.Hit.HirerPlayerId ?? "Console"} for {@event.Hit.Bounty}");
-
-                    await _eventBus.EmitAsync(_plugin, this, @event);
-                }
+                await _hitManager.ClearExpiredHits(duration);
                 
                 await Task.Delay(checkInterval, _cancellationToken.Token);
 

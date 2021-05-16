@@ -1,4 +1,4 @@
-﻿namespace Hitman.UI
+﻿namespace Hitman.API.UI
 {
     public class UIHitEntry
     {

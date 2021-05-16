@@ -1,24 +1,21 @@
-﻿using Hitman.API.Database;
-using Hitman.API.Hits;
+﻿using Hitman.API.Hits;
 using Hitman.Database;
 using Hitman.Database.Models;
 using Hitman.Hits.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OpenMod.API.Eventing;
 using OpenMod.API.Ioc;
 using OpenMod.API.Permissions;
 using OpenMod.API.Prioritization;
 using OpenMod.Core.Permissions;
+using SilK.Unturned.Extras.Dispatcher;
 using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-[assembly: RegisterPermission("hitman",
-    DefaultGrant = PermissionGrantResult.Deny,
-    Description = "Grants the ability to kill players to claim bounties.")]
 
 namespace Hitman.Hits
 {
@@ -29,26 +26,27 @@ namespace Hitman.Hits
         private readonly HitsDbContext _dbContext;
         private readonly IEventBus _eventBus;
         private readonly IActionDispatcher _dispatcher;
+        private ILogger<HitManager> _logger;
 
         public HitManager(
             HitmanPlugin plugin,
             HitsDbContext dbContext,
             IEventBus eventBus,
-            IActionDispatcher dispatcher)
+            IActionDispatcher dispatcher,
+            ILogger<HitManager> logger)
         {
             _plugin = plugin;
             _dbContext = dbContext;
             _eventBus = eventBus;
             _dispatcher = dispatcher;
+            _logger = logger;
         }
-
-        public IQueryable<IHitData> GetHitsData() => _dbContext.Hits.AsQueryable();
 
         public Task<IEnumerable<ICombinedHitData>> GetCombinedHitsData()
         {
             return _dispatcher.Enqueue(async () =>
             {
-                return (await GetHitsData().ToListAsync())
+                return (await _dbContext.Hits.ToListAsync())
                     .GroupBy(x => x.TargetPlayerId)
                     .Select(x => (ICombinedHitData) CombinedHitData.GetCombinedHitData(x.Key, x));
             });
@@ -60,7 +58,7 @@ namespace Hitman.Hits
             {
                 var strId = steamId.ToString();
 
-                var hits = await GetHitsData().Where(x => x.TargetPlayerId.Equals(strId)).ToListAsync();
+                var hits = await _dbContext.Hits.Where(x => x.TargetPlayerId == strId).ToListAsync();
 
                 return hits.Count == 0 ? null : (ICombinedHitData)CombinedHitData.GetCombinedHitData(strId, hits);
             });
@@ -75,7 +73,7 @@ namespace Hitman.Hits
                     TargetPlayerId = playerId,
                     HirerPlayerId = hirerId,
                     Bounty = bounty,
-                    TimePlaced = DateTime.Now
+                    TimePlaced = DateTime.UtcNow
                 };
 
                 await _dbContext.Hits.AddAsync(hitData);
@@ -100,13 +98,37 @@ namespace Hitman.Hits
             });
         }
 
-        public Task RemoveHits(IEnumerable<IHitData> hits)
+        public Task RemoveHits(string playerId)
         {
             return _dispatcher.Enqueue(async () =>
             {
-                _dbContext.Hits.RemoveRange(hits.OfType<HitData>());
+                var hits = await _dbContext.Hits.Where(x => x.TargetPlayerId == playerId).ToListAsync();
+
+                _dbContext.Hits.RemoveRange(hits);
 
                 await _dbContext.SaveChangesAsync();
+            });
+        }
+
+        public Task ClearExpiredHits(TimeSpan duration)
+        {
+            return _dispatcher.Enqueue(async () =>
+            {
+                var expireTime = DateTime.UtcNow.Subtract(duration);
+
+                var expiredHits = await _dbContext.Hits.Where(x => x.TimePlaced < expireTime).ToListAsync();
+
+                _dbContext.Hits.RemoveRange(expiredHits);
+
+                await _dbContext.SaveChangesAsync();
+
+                foreach (var @event in expiredHits.Select(hit => new HitExpiredEvent(hit)))
+                {
+                    _logger.LogInformation(
+                        $"Expiring hit on player {@event.Hit.TargetPlayerId} placed by {@event.Hit.HirerPlayerId ?? "Console"} for {@event.Hit.Bounty}");
+
+                    await _eventBus.EmitAsync(_plugin, this, @event);
+                }
             });
         }
     }

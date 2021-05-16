@@ -8,12 +8,9 @@ namespace Hitman.Hits.Events
     {
         public ICombinedHitData CombinedHit { get; }
 
-        public IReadOnlyCollection<IHitData> IndividualHits { get; }
-
-        public HitCompletedEvent(ICombinedHitData combinedHit, IReadOnlyCollection<IHitData> individualHits)
+        public HitCompletedEvent(ICombinedHitData combinedHit)
         {
             CombinedHit = combinedHit;
-            IndividualHits = individualHits;
         }
     }
 }

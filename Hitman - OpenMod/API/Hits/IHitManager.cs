@@ -1,7 +1,7 @@
-﻿using OpenMod.API.Ioc;
+﻿using System;
+using OpenMod.API.Ioc;
 using Steamworks;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hitman.API.Hits
@@ -9,8 +9,6 @@ namespace Hitman.API.Hits
     [Service]
     public interface IHitManager
     {
-        IQueryable<IHitData> GetHitsData();
-
         Task<IEnumerable<ICombinedHitData>> GetCombinedHitsData();
 
         Task<ICombinedHitData?> GetCombinedHitData(CSteamID steamId);
@@ -19,6 +17,8 @@ namespace Hitman.API.Hits
 
         Task RemoveHit(IHitData hit);
 
-        Task RemoveHits(IEnumerable<IHitData> hits);
+        Task RemoveHits(string playerId);
+
+        Task ClearExpiredHits(TimeSpan duration);
     }
 }

@@ -1,5 +1,5 @@
 packages:
 - id: OpenMod.EntityFrameworkCore
-  version: 3.0.22+d9126b5
-- id: Microsoft.EntityFrameworkCore.Relational
-  version: 3.1.12
+  version: 3.0.28
+- id: SilK.Unturned.Extras
+  version: latest

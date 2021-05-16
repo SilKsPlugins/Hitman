@@ -15,10 +15,6 @@ using OpenMod.Unturned.Commands;
 using OpenMod.Unturned.Users;
 using System;
 
-[assembly: RegisterPermission("exempt",
-    DefaultGrant = PermissionGrantResult.Deny,
-    Description = "Disables placing hits on this player.")]
-
 namespace Hitman.Commands
 {
     [Command("hit", Priority = Priority.High)]

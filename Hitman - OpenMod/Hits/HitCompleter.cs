@@ -2,7 +2,6 @@
 using Cysharp.Threading.Tasks;
 using Hitman.API.Hits;
 using Hitman.Hits.Events;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -15,14 +14,16 @@ using OpenMod.Extensions.Economy.Abstractions;
 using OpenMod.Unturned.Players.Life.Events;
 using OpenMod.Unturned.Users;
 using SDG.Unturned;
+using SilK.Unturned.Extras.Dispatcher;
+using SilK.Unturned.Extras.Events;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Hitman.Hits
 {
     [PluginServiceImplementation(Lifetime = ServiceLifetime.Singleton, Priority = Priority.Lowest)]
-    public class HitCompleter : IHitCompleter
+    public class HitCompleter : IHitCompleter,
+        IInstanceAsyncEventListener<UnturnedPlayerDeathEvent>
     {
         private readonly HitmanPlugin _plugin;
         private readonly IHitManager _hitManager;
@@ -33,6 +34,7 @@ namespace Hitman.Hits
         private readonly IStringLocalizer _stringLocalizer;
         private readonly IConfiguration _configuration;
         private readonly ILogger<HitCompleter> _logger;
+        private readonly IActionDispatcher _actionDispatcher;
 
         public HitCompleter(
             HitmanPlugin plugin,
@@ -42,7 +44,8 @@ namespace Hitman.Hits
             IEventBus eventBus,
             IStringLocalizer stringLocalizer,
             IConfiguration configuration,
-            ILogger<HitCompleter> logger)
+            ILogger<HitCompleter> logger,
+            IActionDispatcher actionDispatcher)
         {
             _plugin = plugin;
             _hitManager = hitManager;
@@ -53,13 +56,12 @@ namespace Hitman.Hits
             _stringLocalizer = stringLocalizer;
             _configuration = configuration;
             _logger = logger;
-
-            _eventBus.Subscribe(_plugin, (EventCallback<UnturnedPlayerDeathEvent>) OnPlayerDeath);
+            _actionDispatcher = actionDispatcher;
         }
 
-        public Task OnPlayerDeath(IServiceProvider serviceProvider, object? sender, UnturnedPlayerDeathEvent @event)
+        public UniTask HandleEventAsync(object? sender, UnturnedPlayerDeathEvent @event)
         {
-            async UniTask PlayerDeath()
+            return _actionDispatcher.Enqueue(async () =>
             {
                 try
                 {
@@ -69,7 +71,8 @@ namespace Hitman.Hits
 
                     if (@event.Player.SteamId == killerId || @event.DeathCause == EDeathCause.SUICIDE) return;
 
-                    var target = _userDirectory.GetOnlineUsers().FirstOrDefault(x => x.SteamId == @event.Player.SteamId);
+                    var target = _userDirectory.GetOnlineUsers()
+                        .FirstOrDefault(x => x.SteamId == @event.Player.SteamId);
                     var killer = _userDirectory.GetOnlineUsers().FirstOrDefault(x => x.SteamId == killerId);
 
                     if (target == null || killer == null) return;
@@ -77,18 +80,14 @@ namespace Hitman.Hits
                     if (await _permissionChecker.CheckPermissionAsync(killer, "hitman") !=
                         PermissionGrantResult.Grant) return;
 
+                    var combinedHit = await _hitManager.GetCombinedHitData(target.SteamId);
 
-                    var strId = target.SteamId.ToString();
-                    var hits = await _hitManager.GetHitsData().Where(x => x.TargetPlayerId == strId).ToListAsync();
+                    if (combinedHit == null || combinedHit.Bounty == 0) return;
 
-                    if (hits.Count == 0) return;
-
-                    var combinedHit = CombinedHitData.GetCombinedHitData(strId, hits);
-
-                    await _hitManager.RemoveHits(hits);
+                    await _hitManager.RemoveHits(combinedHit.TargetPlayerId);
 
                     await _economyProvider.UpdateBalanceAsync(killer.Id, killer.Type, combinedHit.Bounty,
-                        _stringLocalizer["transactions:hit_completed", new { Target = target }]);
+                        _stringLocalizer["transactions:hit_completed", new {Target = target}]);
 
                     await killer.PrintMessageAsync(_stringLocalizer["announcements:hit_completed:killer",
                         new
@@ -130,18 +129,14 @@ namespace Hitman.Hits
                             }]);
                     }
 
-                    var hitCompletedEvent = new HitCompletedEvent(combinedHit, hits);
+                    var hitCompletedEvent = new HitCompletedEvent(combinedHit);
                     await _eventBus.EmitAsync(_plugin, this, hitCompletedEvent);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error occurred during player death event listener");
                 }
-            }
-
-            PlayerDeath().Forget();
-
-            return Task.CompletedTask;
+            }).AsUniTask();
         }
     }
 }
