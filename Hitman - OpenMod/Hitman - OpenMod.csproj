@@ -29,16 +29,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="OpenMod.EntityFrameworkCore" Version="3.0.28" />
-    <PackageReference Include="OpenMod.Extensions.Economy.Abstractions" Version="3.0.28" />
-    <PackageReference Include="OpenMod.Unturned" Version="3.0.28" />
+    <PackageReference Include="OpenMod.Extensions.Economy.Abstractions" Version="3.1.2" />
+    <PackageReference Include="OpenMod.Unturned" Version="3.1.2" />
     <PackageReference Include="Legacy2CPSWorkaround" Version="1.0.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SilK.Unturned.Extras" Version="1.5.5" />
+    <PackageReference Include="SilK.Unturned.Extras" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>
