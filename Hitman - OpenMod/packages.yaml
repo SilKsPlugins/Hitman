@@ -1,5 +1,0 @@
-packages:
-- id: OpenMod.EntityFrameworkCore
-  version: 3.0.28
-- id: SilK.Unturned.Extras
-  version: latest
