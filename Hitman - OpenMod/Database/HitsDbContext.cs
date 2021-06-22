@@ -21,8 +21,12 @@ namespace Hitman.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<HitData>()
                 .HasKey(x => x.HitId);
         }
+
+        protected override string TablePrefix => "";
     }
 }
