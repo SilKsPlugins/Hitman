@@ -21,10 +21,26 @@ namespace Hitman.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<HitData>(entity =>
+            {
+                entity.HasKey(e => e.HitId)
+                    .HasName("PRIMARY");
 
-            modelBuilder.Entity<HitData>()
-                .HasKey(x => x.HitId);
+                entity.Property(e => e.Bounty).HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.HirerPlayerId)
+                    .HasColumnType("text")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.TargetPlayerId)
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_0900_ai_ci");
+
+                entity.Property(e => e.TimePlaced).HasColumnType("datetime");
+            });
         }
 
         protected override string TablePrefix => "";

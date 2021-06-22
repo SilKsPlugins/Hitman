@@ -38,6 +38,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="OpenMod.Unturned.Redist" Version="3.21.21" />
     <PackageReference Include="SilK.Unturned.Extras" Version="1.6.1" />
   </ItemGroup>
 
