@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hitman.Migrations
 {
     [DbContext(typeof(HitsDbContext))]
-    [Migration("20210622183231_Initial")]
-    partial class Initial
+    [Migration("20210309204749_InitialRelease")]
+    partial class InitialRelease
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

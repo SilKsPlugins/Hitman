@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Hitman.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialRelease : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
