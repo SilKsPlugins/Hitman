@@ -1,8 +1,8 @@
-﻿using OpenMod.EntityFrameworkCore;
+﻿using OpenMod.EntityFrameworkCore.MySql;
 
 namespace Hitman.Database
 {
-    public class HitsDbContextFactory : OpenModDbContextFactory<HitsDbContext>
+    public class HitsDbContextFactory : OpenModMySqlDbContextFactory<HitsDbContext>
     {
     }
 }

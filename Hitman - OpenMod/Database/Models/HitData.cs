@@ -15,6 +15,7 @@ namespace Hitman.Database.Models
         public string? HirerPlayerId { get; set; }
 
         [Required]
+        [DataType("decimal(18,2)")]
         public decimal Bounty { get; set; }
 
         [Required]

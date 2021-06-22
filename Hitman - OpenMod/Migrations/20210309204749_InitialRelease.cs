@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.Data.EntityFrameworkCore.Metadata;
+using System;
 
 namespace Hitman.Migrations
 {
@@ -13,7 +13,7 @@ namespace Hitman.Migrations
                 columns: table => new
                 {
                     HitId = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     TargetPlayerId = table.Column<string>(nullable: false),
                     HirerPlayerId = table.Column<string>(nullable: true),
                     Bounty = table.Column<decimal>(nullable: false),
