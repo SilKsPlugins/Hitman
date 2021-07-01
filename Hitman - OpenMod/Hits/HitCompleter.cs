@@ -59,9 +59,9 @@ namespace Hitman.Hits
             _actionDispatcher = actionDispatcher;
         }
 
-        public UniTask HandleEventAsync(object? sender, UnturnedPlayerDeathEvent @event)
+        public async UniTask HandleEventAsync(object? sender, UnturnedPlayerDeathEvent @event)
         {
-            return _actionDispatcher.Enqueue(async () =>
+            await _actionDispatcher.Enqueue(async () =>
             {
                 try
                 {
@@ -136,7 +136,7 @@ namespace Hitman.Hits
                 {
                     _logger.LogError(ex, "Error occurred during player death event listener");
                 }
-            }).AsUniTask();
+            });
         }
     }
 }
