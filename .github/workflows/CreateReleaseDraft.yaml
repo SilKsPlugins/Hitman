@@ -44,7 +44,7 @@ jobs:
         cd Publish
         mv "${{ env.PLUGIN_NAME }}.dll" ../OpenMod/Plugins
         mv product.json ../OpenMod
-        rm 0Harmony.dll Autofac.dll Autofac.Extensions.DependencyInjection.dll Contrib.Bcl.Ranges.dll Cronos.dll \
+        rm -f 0Harmony.dll Autofac.dll Autofac.Extensions.DependencyInjection.dll Contrib.Bcl.Ranges.dll Cronos.dll \
           dnlib.dll DotNet.Glob.dll InlineIL.dll JetBrains.Annotations.dll Microsoft.Bcl.AsyncInterfaces.dll \
           Microsoft.Bcl.HashCode.dll Microsoft.DotNet.PlatformAbstractions.dll \
           Microsoft.Extensions.Configuration.Abstractions.dll Microsoft.Extensions.Configuration.Binder.dll \
