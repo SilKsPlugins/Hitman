@@ -18,17 +18,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.inputs.version }}
-        release_name: "${{ env.PLUGIN_NAME }} Release v${{ github.event.inputs.version }}"
-        draft: true
-        prerelease: false
         
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -87,6 +76,17 @@ jobs:
         zip -qr ./Release.zip *
         cd ..
       shell: bash
+    
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.version }}
+        release_name: "${{ env.PLUGIN_NAME }} Release v${{ github.event.inputs.version }}"
+        draft: true
+        prerelease: false
         
     - name: Upload OpenMod release asset
       uses: actions/upload-release-asset@v1
