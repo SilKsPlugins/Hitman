@@ -70,7 +70,8 @@ jobs:
           ReadLine.dll Rocket.API.dll Rocket.Core.dll Rocket.Unturned.dll RuntimeNullables.dll Semver.dll \
           Serilog.dll Serilog.Extensions.Hosting.dll Serilog.Extensions.Logging.dll Serilog.Settings.Configuration.dll \
           Serilog.Sinks.Async.dll Serilog.Sinks.Console.dll Serilog.Sinks.File.dll \
-          SmartFormat.dll System.*.dll UniTask.dll UniTask.Linq.dll YamlDotNet.dll
+          SmartFormat.dll System.*.dll UniTask.dll UniTask.Linq.dll YamlDotNet.dll \
+          Assembly-CSharp.dll SDG.*.dll Steamsworks.*.dll SystemEx.dll UnityEx.dll
         mv *.dll ../OpenMod/Libraries
         cd ../OpenMod
         zip -qr ./Release.zip *
