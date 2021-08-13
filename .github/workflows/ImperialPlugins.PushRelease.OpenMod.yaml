@@ -15,6 +15,7 @@ jobs:
       PLUGIN_NAME: "${{ github.event.repository.name }}"
       VERSION: "${{ github.event.release.tag_name }}"
       PRODUCT_BRANCH: "openmod"
+      PRODUCT_TEST_BRANCH: "testing"
       RELEASE_DESCRIPTION: "${{ github.event.release.body }}"
       ASSET_FILE_NAME: "${{ github.event.repository.name }}-OpenMod-v${{ github.event.release.tag_name }}.zip"
       IP_API_KEY: "${{ secrets.IMPERIALPLUGINS_API_KEY }}"
@@ -47,7 +48,7 @@ jobs:
           forceUpdate=false \
           file[fileName]="${{ env.ASSET_FILE_NAME }}" \
           file[base64]="%${{ env.ASSET_FILE_NAME }}" \
-          productBranchIdentifier="${{ env.PRODUCT_BRANCH }}" \
+          productBranchIdentifier="${{ github.event.release.prerelease && env.PRODUCT_TEST_BRANCH || env.PRODUCT_BRANCH }}" \
           productId=${{ env.PRODUCT_ID }} > postdata.txt
         sed -i "s/base64\":\"/base64\":\"data:application\/x-zip-compressed;base64,/" postdata.txt
       shell: bash
