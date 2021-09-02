@@ -14,12 +14,8 @@ namespace Hitman.Migrations
                 {
                     HitId = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    TargetPlayerId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                        .Annotation("MySql:Collation", "utf8mb4_0900_ai_ci"),
-                    HirerPlayerId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                        .Annotation("MySql:Collation", "utf8mb4_0900_ai_ci"),
+                    TargetPlayerId = table.Column<string>(type: "text", nullable: false),
+                    HirerPlayerId = table.Column<string>(type: "text", nullable: false),
                     Bounty = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TimePlaced = table.Column<DateTime>(type: "datetime", nullable: false)
                 },

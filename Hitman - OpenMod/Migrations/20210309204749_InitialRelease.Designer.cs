@@ -31,14 +31,12 @@ namespace Hitman.Migrations
                     b.Property<string>("HirerPlayerId")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasAnnotation("MySql:CharSet", "utf8mb4")
-                        .HasAnnotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                        .HasAnnotation("MySql:CharSet", "utf8mb4");
 
                     b.Property<string>("TargetPlayerId")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasAnnotation("MySql:CharSet", "utf8mb4")
-                        .HasAnnotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                        .HasAnnotation("MySql:CharSet", "utf8mb4");
 
                     b.Property<DateTime>("TimePlaced")
                         .HasColumnType("datetime");

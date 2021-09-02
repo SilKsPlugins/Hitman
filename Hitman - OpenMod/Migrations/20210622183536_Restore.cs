@@ -23,18 +23,14 @@ namespace Hitman.Migrations
                 table: "Hits",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "text")
-                .OldAnnotation("MySql:CharSet", "utf8mb4")
-                .OldAnnotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "HirerPlayerId",
                 table: "Hits",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "text")
-                .OldAnnotation("MySql:CharSet", "utf8mb4")
-                .OldAnnotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "Bounty",
@@ -67,9 +63,7 @@ namespace Hitman.Migrations
                 table: "Hits",
                 type: "text",
                 nullable: false,
-                oldClrType: typeof(string))
-                .Annotation("MySql:CharSet", "utf8mb4")
-                .Annotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                oldClrType: typeof(string));
 
             migrationBuilder.AlterColumn<string>(
                 name: "HirerPlayerId",
@@ -77,9 +71,7 @@ namespace Hitman.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldNullable: true)
-                .Annotation("MySql:CharSet", "utf8mb4")
-                .Annotation("MySql:Collation", "utf8mb4_0900_ai_ci");
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<decimal>(
                 name: "Bounty",
