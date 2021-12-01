@@ -60,7 +60,6 @@ namespace Hitman
             {
                 throw new Exception("The configured connection string is incorrect.");
             }
-            await _dbContext.Database.MigrateAsync();
 
             LifetimeScope.Resolve<IHitExpirer>();
             LifetimeScope.Resolve<IHitsUIManager>();
