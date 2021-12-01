@@ -1,7 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using Hitman.API.Hits;
-using Hitman.Hits.Events;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,7 +9,6 @@ using OpenMod.API.Ioc;
 using OpenMod.API.Prioritization;
 using OpenMod.Core.Helpers;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,7 +42,7 @@ namespace Hitman.Hits
             _logger = logger;
 
             _cancellationToken = new CancellationTokenSource();
-            CheckExpiredHits().Forget();
+            UniTask.RunOnThreadPool(CheckExpiredHits).Forget();
         }
 
         public void Dispose()
