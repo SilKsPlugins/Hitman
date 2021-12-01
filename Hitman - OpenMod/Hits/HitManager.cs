@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 
 namespace Hitman.Hits
 {
@@ -23,20 +24,17 @@ namespace Hitman.Hits
     public class HitManager : IHitManager
     {
         private readonly HitmanPlugin _plugin;
-        private readonly HitsDbContext _dbContext;
         private readonly IEventBus _eventBus;
         private readonly IActionDispatcher _dispatcher;
         private ILogger<HitManager> _logger;
 
         public HitManager(
             HitmanPlugin plugin,
-            HitsDbContext dbContext,
             IEventBus eventBus,
             IActionDispatcher dispatcher,
             ILogger<HitManager> logger)
         {
             _plugin = plugin;
-            _dbContext = dbContext;
             _eventBus = eventBus;
             _dispatcher = dispatcher;
             _logger = logger;
@@ -46,7 +44,9 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
-                return (await _dbContext.Hits.ToListAsync())
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
+
+                return (await dbContext.Hits.ToListAsync())
                     .GroupBy(x => x.TargetPlayerId)
                     .Select(x => (ICombinedHitData) CombinedHitData.GetCombinedHitData(x.Key, x));
             });
@@ -56,9 +56,11 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
+
                 var strId = steamId.ToString();
 
-                var hits = await _dbContext.Hits.Where(x => x.TargetPlayerId == strId).ToListAsync();
+                var hits = await dbContext.Hits.Where(x => x.TargetPlayerId == strId).ToListAsync();
 
                 return hits.Count == 0 ? null : (ICombinedHitData)CombinedHitData.GetCombinedHitData(strId, hits);
             });
@@ -68,6 +70,8 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
+
                 var hitData = new HitData()
                 {
                     TargetPlayerId = playerId,
@@ -76,9 +80,9 @@ namespace Hitman.Hits
                     TimePlaced = DateTime.UtcNow
                 };
 
-                await _dbContext.Hits.AddAsync(hitData);
+                await dbContext.Hits.AddAsync(hitData);
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 var @event = new HitPlacedEvent(hitData);
 
@@ -90,11 +94,13 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
+
                 if (hit is not HitData hitData) return;
 
-                _dbContext.Hits.Remove(hitData);
+                dbContext.Hits.Remove(hitData);
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             });
         }
 
@@ -102,11 +108,13 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
-                var hits = await _dbContext.Hits.Where(x => x.TargetPlayerId == playerId).ToListAsync();
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
 
-                _dbContext.Hits.RemoveRange(hits);
+                var hits = await dbContext.Hits.Where(x => x.TargetPlayerId == playerId).ToListAsync();
 
-                await _dbContext.SaveChangesAsync();
+                dbContext.Hits.RemoveRange(hits);
+
+                await dbContext.SaveChangesAsync();
             });
         }
 
@@ -114,13 +122,15 @@ namespace Hitman.Hits
         {
             return _dispatcher.Enqueue(async () =>
             {
+                await using var dbContext = _plugin.LifetimeScope.Resolve<HitsDbContext>();
+
                 var expireTime = DateTime.UtcNow.Subtract(duration);
 
-                var expiredHits = await _dbContext.Hits.Where(x => x.TimePlaced < expireTime).ToListAsync();
+                var expiredHits = await dbContext.Hits.Where(x => x.TimePlaced < expireTime).ToListAsync();
 
-                _dbContext.Hits.RemoveRange(expiredHits);
+                dbContext.Hits.RemoveRange(expiredHits);
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 foreach (var @event in expiredHits.Select(hit => new HitExpiredEvent(hit)))
                 {
