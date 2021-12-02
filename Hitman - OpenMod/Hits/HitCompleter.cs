@@ -77,6 +77,11 @@ namespace Hitman.Hits
 
                     if (target == null || killer == null) return;
 
+                    if (killer.Player.SteamPlayer.isAdmin && _configuration.GetValue("hits:adminsClaimHits", true))
+                    {
+                        return;
+                    }
+
                     if (await _permissionChecker.CheckPermissionAsync(killer, "hitman") !=
                         PermissionGrantResult.Grant) return;
 

@@ -8,6 +8,7 @@ hits:
   canPlaceOnSelf: false # Whether or not players can place hits on themselves
   minimumBounty: 100 # Minimum bounty for a hit
   refundExpired: false # Should refund expired, unclaimed bounties
+  adminsClaimHits: true # Should vanilla admins claim hits
 
   placed:
     announce: true # Should announce in the chat when a hit is placed
