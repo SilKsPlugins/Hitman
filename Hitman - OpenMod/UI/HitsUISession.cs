@@ -3,6 +3,8 @@ using Hitman.API.UI;
 using Hitman.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OpenMod.API.Permissions;
+using OpenMod.Core.Permissions.Events;
 using OpenMod.Unturned.Users;
 using SilK.Unturned.Extras.Configuration;
 using SilK.Unturned.Extras.Events;
@@ -12,7 +14,8 @@ using System;
 namespace Hitman.UI
 {
     public class HitsUISession : SingleEffectUISession,
-        IInstanceAsyncEventListener<IHitListUpdatedEvent>
+        IInstanceAsyncEventListener<IHitListUpdatedEvent>,
+        IInstanceAsyncEventListener<PermissionActorRoleEvent>
     {
         public override string Id => "Hitman.Hits";
 
@@ -21,6 +24,7 @@ namespace Hitman.UI
         private readonly IConfigurationParser<HitmanConfiguration> _configuration;
         private readonly IHitsUIManager _hitsUIManager;
         private readonly IStringLocalizer _stringLocalizer;
+        private readonly IPermissionChecker _permissionChecker;
         private readonly ILogger<HitsUISession> _logger;
 
         public const int MaxPossibleElements = 10;
@@ -29,6 +33,7 @@ namespace Hitman.UI
             IConfigurationParser<HitmanConfiguration> configuration,
             IHitsUIManager hitsUIManager,
             IStringLocalizer stringLocalizer,
+            IPermissionChecker permissionChecker,
             ILogger<HitsUISession> logger,
             UnturnedUser user,
             IServiceProvider serviceProvider) : base(user, serviceProvider)
@@ -36,6 +41,7 @@ namespace Hitman.UI
             _configuration = configuration;
             _hitsUIManager = hitsUIManager;
             _stringLocalizer = stringLocalizer;
+            _permissionChecker = permissionChecker;
             _logger = logger;
         }
 
@@ -86,6 +92,22 @@ namespace Hitman.UI
         public async UniTask HandleEventAsync(object? sender, IHitListUpdatedEvent @event)
         {
             await UpdateHitsAsync();
+        }
+
+        public UniTask HandleEventAsync(object? sender, PermissionActorRoleEvent @event)
+        {
+            if (@event.Actor.Type == User.Type || @event.Actor.Id == User.Id)
+            {
+                UniTask.RunOnThreadPool(async () =>
+                {
+                    if (await _permissionChecker.CheckPermissionAsync(User, "ui") != PermissionGrantResult.Grant)
+                    {
+                        await EndAsync();
+                    }
+                }).Forget();
+            }
+
+            return UniTask.CompletedTask;
         }
     }
 }
